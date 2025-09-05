@@ -67,7 +67,7 @@ def main():
                 
                 # Log the previous activity
                 if last_window_title is not None:
-                    log_activity(activity_start_time, end_time, last_app_name)
+                    log_activity(activity_start_time, end_time, last_app_name, last_window_title)
                     current_window_category = classify_window(current_window_title)
                     print(f"Switched from '{last_window_title}' ()")
 
@@ -146,7 +146,7 @@ def main():
         # Log the final activity before exiting
         end_time = datetime.now()
         if last_window_title is not None:
-            log_activity(activity_start_time, end_time, last_app_name)
+            log_activity(activity_start_time, end_time, last_app_name, last_window_title)
         print("\nTracker stopped. Final activity logged.")
     except Exception as e:
         print(f"\nAn unexpected error occurred: {e}")
