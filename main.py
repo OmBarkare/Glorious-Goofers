@@ -6,7 +6,7 @@ from helper import (
     initialize_log_file,
     log_activity,
     classify_window)
-from notifier import send_nudge_notification
+from notifier import (send_nudge_notification, send_focus_session_start_notification, send_focus_session_end_warning, send_focus_session_end_notification_after_warning)
 import json
 import os
 from datetime import datetime, timedelta
@@ -45,10 +45,12 @@ def main():
     current_window_category = 'neutral'
     activity_start_time = datetime.now()
     unproductive_session_start = None
+    productive_session_end_warning_counter = 0
+    productive_start_time = None
     in_focus_session = False
     last_nudge_time = 0
+    FOCUS_SESSION_THRESHOLD = config.get("start_focus_session_in", 5)
     NUDGE_COOLDOWN_SECONDS = config.get("nudge_cooldown", 5)
-    START_FOCUS_SESSION_IN = config.get("start_focus_session_in", 5)
     MAX_UNPRODUCTIVE_SESSION_TIME = config.get("max_unproductive_session_time", 10)
 
     print("Productivity Tracker started. Press Ctrl+C to stop.")
@@ -65,7 +67,7 @@ def main():
                 
                 # Log the previous activity
                 if last_window_title is not None:
-                    log_activity(activity_start_time, end_time, last_app_name)
+                    log_activity(activity_start_time, end_time, last_app_name, last_window_title)
                     current_window_category = classify_window(current_window_title)
                     print(f"Switched from '{last_window_title}' ()")
 
@@ -97,6 +99,36 @@ def main():
                     # if in_focus_session:
                     #     print("Unproductive app detected. Ending focus session.")
                     #     in_focus_session = False
+
+            if current_window_category == 'productive':
+                if productive_start_time is not None:
+                    productive_elapsed = (datetime.now() - productive_start_time).total_seconds()
+                    if not in_focus_session and productive_elapsed >= FOCUS_SESSION_THRESHOLD:
+                        in_focus_session = True
+                        send_focus_session_start_notification()
+                        print("Focus session started automatically!")
+                else:
+                    productive_start_time = datetime.now()
+                    unproductive_session_start = None
+            else:
+                if in_focus_session:
+                    cooldown = (time.time() - last_nudge_time)
+                    if cooldown >= NUDGE_COOLDOWN_SECONDS:
+                        if productive_session_end_warning_counter < 3:
+                            send_focus_session_end_warning()
+                        else:
+                            print("Focus session ended due to unproductive activity.")
+                            in_focus_session = False
+                            productive_start_time = None
+                            productive_session_end_warning_counter = 0
+                            send_focus_session_end_notification_after_warning()
+                        productive_session_end_warning_counter += 1
+                        last_nudge_time = time.time()
+
+                else:
+                    in_focus_session = False
+                    productive_start_time = None
+
             if not in_focus_session and current_window_category == 'unproductive':
                 cooldown = (time.time() - last_nudge_time)
                 if unproductive_session_start is None:
@@ -114,7 +146,7 @@ def main():
         # Log the final activity before exiting
         end_time = datetime.now()
         if last_window_title is not None:
-            log_activity(activity_start_time, end_time, last_app_name)
+            log_activity(activity_start_time, end_time, last_app_name, last_window_title)
         print("\nTracker stopped. Final activity logged.")
     except Exception as e:
         print(f"\nAn unexpected error occurred: {e}")

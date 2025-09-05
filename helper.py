@@ -53,41 +53,48 @@ def initialize_log_file():
             json.dump([], f)
 
 # Reads, updates, and writes the aggregated activity log to the JSON file.
-def log_activity(start_time, end_time, app_name):
+# helper.py
+def log_activity(start_time, end_time, app_name, window_title=None):
+    """
+    Logs each window/tab as a separate entry in AI-friendly JSON format.
+    """
     duration = (end_time - start_time).total_seconds()
-    
     if duration < 1 or not app_name:
         return
 
-    duration = int(duration)
+    duration = round(duration, 2)
     end_time_str = end_time.strftime('%Y-%m-%d %H:%M:%S')
 
+    # Load existing logs
     try:
         with open(LOG_FILE, 'r', encoding='utf-8') as f:
             logs = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
-        logs = []
+        logs = {"apps": []}
 
-    # Find if the app already has an entry
-    app_entry = next((item for item in logs if item.get('app_name') == app_name), None)
+    if "apps" not in logs:
+        logs["apps"] = []
+
+    # Use window title if available, else app_name
+    entry_name = window_title if window_title else app_name
+
+    # Check if entry already exists
+    app_entry = next((item for item in logs["apps"] if item["app_name"] == entry_name), None)
 
     if app_entry:
-        # Update existing entry
-        app_entry['total_time_spent'] += duration
-        app_entry['last_active'] = end_time_str
-        if duration > app_entry['longest_session']:
-            app_entry['longest_session'] = duration
+        app_entry["total_time_spent"] += duration
+        if duration > app_entry["longest_session"]:
+            app_entry["longest_session"] = duration
+        app_entry["last_active"] = end_time_str
     else:
-        # Create new entry
         new_entry = {
-            'app_name': app_name,
-            'last_active': end_time_str,
-            'total_time_spent': duration,
-            'longest_session': duration
+            "app_name": entry_name,
+            "total_time_spent": duration,
+            "longest_session": duration,
+            "last_active": end_time_str
         }
-        logs.append(new_entry)
+        logs["apps"].append(new_entry)
 
-    # Write the updated data back to the file
+    # Save back to file
     with open(LOG_FILE, 'w', encoding='utf-8') as f:
         json.dump(logs, f, indent=2)
-
