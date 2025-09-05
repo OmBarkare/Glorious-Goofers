@@ -1,0 +1,5 @@
+{
+    "productive_apps": ["visual studio code"],
+    "start_focus_session_in": 5,
+    "nudge_cooldown": 5
+}

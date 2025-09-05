@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.vscode/
+.venv/
+data/app_data.json
+data/user_data.json
+config.json
