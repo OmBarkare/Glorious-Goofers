@@ -55,9 +55,6 @@ def initialize_log_file():
 # Reads, updates, and writes the aggregated activity log to the JSON file.
 # helper.py
 def log_activity(start_time, end_time, app_name, window_title=None):
-    """
-    Logs each window/tab as a separate entry in AI-friendly JSON format.
-    """
     duration = (end_time - start_time).total_seconds()
     if duration < 1 or not app_name:
         return
@@ -65,12 +62,18 @@ def log_activity(start_time, end_time, app_name, window_title=None):
     duration = round(duration, 2)
     end_time_str = end_time.strftime('%Y-%m-%d %H:%M:%S')
 
-    # Load existing logs
-    try:
-        with open(LOG_FILE, 'r', encoding='utf-8') as f:
-            logs = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
+    # Ensure the folder exists
+    os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
+
+    # Load existing logs or create new structure
+    if not os.path.exists(LOG_FILE):
         logs = {"apps": []}
+    else:
+        try:
+            with open(LOG_FILE, 'r', encoding='utf-8') as f:
+                logs = json.load(f)
+        except json.JSONDecodeError:
+            logs = {"apps": []}
 
     if "apps" not in logs:
         logs["apps"] = []
