@@ -5,11 +5,31 @@ import os
 CONFIG_FILE = 'config.json'
 LOG_FILE = './data/app_data.json' 
 
+def classify_window(window_title):
+    """Classifies the window title as 'productive' or 'unproductive' based on config."""
+    with open(CONFIG_FILE, 'r') as file:
+        config = json.load(file)
+    productive_keywords = config.get("productive_keywords", [])
+    unproductive_keywords = config.get("unproductive_keywords", [])
+    
+    title_lower = window_title.lower()
+    
+    for keyword in unproductive_keywords:
+        if keyword.lower() in title_lower:
+            return 'unproductive'
+        
+    for keyword in productive_keywords:
+        if keyword.lower() in title_lower:
+            return 'productive'
+    
+    
+    return 'neutral'
+
 def load_config():
     """Loads the configuration from config.json."""
     try:
-        with open(CONFIG_FILE, 'r') as f:
-            return json.load(f)
+        with open(CONFIG_FILE, 'r') as file:
+            return json.load(file)
     except FileNotFoundError:
         print(f"Error: '{CONFIG_FILE}' not found. Please create it.")
         # Create a default config file if it doesn't exist
