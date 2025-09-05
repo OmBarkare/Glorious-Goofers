@@ -1,5 +1,8 @@
 {
     "productive_apps": ["visual studio code"],
     "start_focus_session_in": 5,
-    "nudge_cooldown": 5
+    "max_unproductive_session_time": 10,
+    "nudge_cooldown": 5,
+    "productive_keywords": ["leetcode", "stackoverflow", "wikipedia", "chatgpt"],
+    "unproductive_keywords": ["youtube", "reddit", "twitter", "instagram"]
 }

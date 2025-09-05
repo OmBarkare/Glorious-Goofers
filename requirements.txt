@@ -1,0 +1,8 @@
+EWMHlib==0.2
+plyer==2.1.0
+PyMonCtl==0.92
+python-xlib==0.33
+PyWinBox==0.7
+PyWinCtl==0.4.1
+six==1.17.0
+typing_extensions==4.15.0
