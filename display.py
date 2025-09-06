@@ -134,28 +134,6 @@ class ProductivityDashboard:
         
         text_widget.config(state="disabled")  # Make read-only
         text_widget.pack(fill="x")
-        
-        # Keywords section
-        keywords_frame = ttk.Frame(insights_frame)
-        keywords_frame.pack(fill="x", pady=(10, 0))
-        
-        # Productive keywords
-        prod_frame = ttk.Frame(keywords_frame)
-        prod_frame.pack(fill="x", pady=(0, 5))
-        ttk.Label(prod_frame, text="🟢 Productive Keywords:", 
-                 style="Data.TLabel", foreground="#2d8c2d").pack(anchor="w")
-        prod_text = ", ".join(self.data["productive_keywords"])
-        ttk.Label(prod_frame, text=prod_text, style="Data.TLabel", 
-                 wraplength=450).pack(anchor="w", padx=(20, 0))
-        
-        # Unproductive keywords
-        unprod_frame = ttk.Frame(keywords_frame)
-        unprod_frame.pack(fill="x")
-        ttk.Label(unprod_frame, text="🔴 Unproductive Keywords:", 
-                 style="Data.TLabel", foreground="#c4342d").pack(anchor="w")
-        unprod_text = ", ".join(self.data["unproductive_keywords"])
-        ttk.Label(unprod_frame, text=unprod_text, style="Data.TLabel", 
-                 wraplength=450).pack(anchor="w", padx=(20, 0))
     
     def run(self):
         self.root.mainloop()

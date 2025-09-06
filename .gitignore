@@ -5,3 +5,4 @@ __pycache__/
 data/app_data.json
 data/user_data.json
 config.json
+dist/

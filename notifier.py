@@ -48,3 +48,15 @@ def send_focus_session_end_notification_after_warning():
         print(f"Notification sent for focus session end")
     except Exception as e:
         print(f"Error sending) notification: {e}")
+
+def send_too_much_timepass():
+    try:
+        notification.notify(
+            title="Time To Take A Break",
+            message=f"You Will See Your Stats Soon",
+            app_name="Productivity Tracker",
+            timeout=7
+        )
+        print(f"Notification sent for focus session end")
+    except Exception as e:
+        print(f"Error sending) notification: {e}")

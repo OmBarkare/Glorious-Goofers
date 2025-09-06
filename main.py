@@ -51,6 +51,7 @@ def main():
     activity_start_time = datetime.now()
     unproductive_session_start = None
     productive_session_end_warning_counter = 0
+    unproductive_session_warning_counter = 0
     productive_start_time = None
     in_focus_session = False
     last_nudge_time = 0
@@ -127,6 +128,12 @@ def main():
                             productive_start_time = None
                             productive_session_end_warning_counter = 0
                             send_focus_session_end_notification_after_warning()
+                            if last_window_title is not None:
+                                log_activity(activity_start_time, end_time, last_app_name, last_window_title)
+                                
+                            log_activity(activity_start_time, end_time, last_app_name, last_window_title)
+                            analyze_data(LOG_FILE)
+                            load_and_display_dashboard(USER_DATA_FILE)
                         productive_session_end_warning_counter += 1
                         last_nudge_time = time.time()
 
@@ -141,7 +148,17 @@ def main():
                 else:
                     elapsed = (datetime.now() - unproductive_session_start).total_seconds()
                     if elapsed >= MAX_UNPRODUCTIVE_SESSION_TIME and cooldown >= NUDGE_COOLDOWN_SECONDS:
-                        send_nudge_notification(current_window_title)
+                        if unproductive_session_warning_counter < 3:
+                            send_nudge_notification(current_window_title)
+                            last_nudge_time = time.time()
+                            unproductive_session_warning_counter += 1
+                        else:
+                            unproductive_session_start = None
+                            unproductive_session_warning_counter = 0
+                            # log_activity(activity_start_time, end_time, last_app_name, last_window_title)
+            
+                            analyze_data(LOG_FILE)
+                            load_and_display_dashboard(USER_DATA_FILE)
                         print("You've been unproductive for a while. Time to focus!")
                         unproductive_session_start = None
             print("Current Window Category: ",current_window_category)
@@ -150,8 +167,12 @@ def main():
     except KeyboardInterrupt:
         # Log the final activity before exiting
         end_time = datetime.now()
-        if last_window_title is not None:
-            log_activity(activity_start_time, end_time, last_app_name, last_window_title)
+        # if last_window_title is not None:
+        #     log_activity(activity_start_time, end_time, last_app_name, last_window_title)
+            
+        # analyze_data(LOG_FILE)
+        # load_and_display_dashboard(USER_DATA_FILE)
+        log_activity(activity_start_time, end_time, last_app_name, last_window_title)
             
         analyze_data(LOG_FILE)
         load_and_display_dashboard(USER_DATA_FILE)
@@ -161,4 +182,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

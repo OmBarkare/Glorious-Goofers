@@ -1,7 +1,6 @@
 import json
 import os
 from google import genai
-import threading
 from datetime import datetime
 import re
 
@@ -33,7 +32,7 @@ Each entry has:
    - unproductive_time
    - productivity_score = (productive_time / total_time) * 100
 4. Provide 2-3 insights.
-5. give a list of single word DEFINING keywords that strongly suggest if a window is productive or unproductive. 
+5. give a list of single DEFINING keywords that strongly suggest if a window is productive based on your analysis for current dataset. 
    Avoid generic keywords which might imply both productive and unproductive usage or be neutral. Keep the list concise.
 
 
@@ -77,7 +76,6 @@ Each entry has:
     "<string>",
     "<string>"
   ],
-  "unproductive_keywords": ["<string>", "<string>"],
   "productive_keywords": ["<string>", "<string>"]
 }
 """
@@ -100,12 +98,7 @@ def analyze_worker(log_path):
 def maybe_trigger_analysis(log_path):
     global last_analyze_time, analyze_in_progress
     now = datetime.now()
-    elapsed = (now - last_analyze_time).total_seconds()
-
-    if elapsed >= ANALYZE_INTERVAL_SECONDS and not analyze_in_progress:
-        analyze_in_progress = True
-        last_analyze_time = now
-        threading.Thread(target=analyze_worker, args=(log_path,), daemon=True).start()
+    analyze_worker(log_path)
 
 # Load your log JSON from file
 def analyze_data(log_path):
