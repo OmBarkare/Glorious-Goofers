@@ -1,4 +1,5 @@
 import pywinctl as pwc
+from analyze import analyze_data
 from plyer import notification
 import time
 from helper import (
@@ -10,8 +11,12 @@ from notifier import (send_nudge_notification, send_focus_session_start_notifica
 import json
 import os
 from datetime import datetime, timedelta
+from display import load_and_display_dashboard
 
+USER_DATA_FILE = "./data/user_data.json"
+LOG_FILE = './data/app_data.json'
 CHECK_INTERVAL_SECONDS = 0.5
+ANALYZE_INTERVAL_SECONDS = 300  # Analyze every 5 minutes
 
 # def send_nudge_notification(distracting_app_title):
 #     """Sends a desktop notification to nudge the user back to a productive task."""
@@ -147,6 +152,9 @@ def main():
         end_time = datetime.now()
         if last_window_title is not None:
             log_activity(activity_start_time, end_time, last_app_name, last_window_title)
+            
+        analyze_data(LOG_FILE)
+        load_and_display_dashboard(USER_DATA_FILE)
         print("\nTracker stopped. Final activity logged.")
     except Exception as e:
         print(f"\nAn unexpected error occurred: {e}")
