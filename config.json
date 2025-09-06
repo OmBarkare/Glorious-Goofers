@@ -99,8 +99,9 @@
         "python",
         ".py"
     ],
-    "start_focus_session_in": 10,
-    "nudge_cooldown": 10,
+    "start_focus_session_in": 20,
+    "nudge_cooldown": 20,
+    "max_unproductive_session_time": 10,
     "unproductive_keywords": [
         "meme",
         "game",

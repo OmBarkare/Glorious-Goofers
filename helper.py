@@ -2,7 +2,7 @@ import json
 import os
 
 # --- Configuration and Constants ---
-CONFIG_FILE = 'config.json'
+CONFIG_FILE = './config.json'
 LOG_FILE = './data/app_data.json' 
 USER_DATA_FILE = "./data/user_data.json"
 
@@ -32,7 +32,9 @@ def load_config():
     try:
         # Check if user data file exists
         if not os.path.exists(USER_DATA_FILE):
-            user_data = {}
+            os.mkdir(os.path.dirname(USER_DATA_FILE))
+            with open(USER_DATA_FILE, 'w') as f:
+                json.dump({}, f)
         else:
             with open(USER_DATA_FILE, 'r', encoding='utf-8-sig') as file:
                 user_data = json.load(file)
@@ -43,8 +45,8 @@ def load_config():
             default_config = {
                 "productive_keywords": ["code", "visual studio", "pycharm", "terminal", "document", "excel", "photoshop"],
                 "unproductive_keywords": ["youtube", "facebook", "instagram", "twitter", "tiktok", "netflix"],
-                "start_focus_session_in": 5,
-                "nudge_cooldown": 5,
+                "start_focus_session_in": 20,
+                "nudge_cooldown": 20,
                 "max_unproductive_session_time": 10
             }
             with open(CONFIG_FILE, 'w') as f:
@@ -127,7 +129,7 @@ def initialize_log_file():
     """Creates the JSON log file with proper structure."""
     # Create directory if it doesn't exist
     if not os.path.exists(os.path.dirname(LOG_FILE)):
-        os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
+        os.makedirs(os.path.dirname(LOG_FILE))
     
     # Initialize with proper structure
     initial_data = {"apps": []}
