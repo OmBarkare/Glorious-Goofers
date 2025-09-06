@@ -4,6 +4,7 @@ from google import genai
 from datetime import datetime
 import re
 
+USER_DATA_FILE = "./data/user_data.json"
 CHECK_INTERVAL_SECONDS = 0.5
 ANALYZE_INTERVAL_SECONDS = 10  # 10s for testing, change to 300s later
 SYSTEM_PROMPT = """
@@ -79,7 +80,6 @@ Each entry has:
   "productive_keywords": ["<string>", "<string>"]
 }
 """
-USER_DATA_FILE = "./data/user_data.json"
 # Global state flags
 last_analyze_time = datetime.now()
 analyze_in_progress = False
@@ -120,7 +120,8 @@ def analyze_data(log_path):
     cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw_output.strip(), flags=re.DOTALL)
     try:
         analyzed_data = json.loads(cleaned)  # 🔥 parse into dict
-        os.makedirs(os.path.dirname(USER_DATA_FILE), exist_ok=True)
+        if not os.path.exists(os.path.dirname(USER_DATA_FILE)):
+          os.makedirs(os.path.dirname(USER_DATA_FILE), exist_ok=True)
         with open(USER_DATA_FILE, "w", encoding="utf-8") as f:
           json.dump(analyzed_data, f, indent=2, ensure_ascii=False)      # 🔥 save into user_data.json
         print(f"[ANALYZE] Saved results to {USER_DATA_FILE}")

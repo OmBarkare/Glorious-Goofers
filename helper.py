@@ -126,7 +126,8 @@ def load_config():
 def initialize_log_file():
     """Creates the JSON log file with proper structure."""
     # Create directory if it doesn't exist
-    os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
+    if not os.path.exists(os.path.dirname(LOG_FILE)):
+        os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
     
     # Initialize with proper structure
     initial_data = {"apps": []}

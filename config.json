@@ -96,7 +96,8 @@
         "VS Code",
         "main",
         "projects",
-        "python"
+        "python",
+        ".py"
     ],
     "start_focus_session_in": 10,
     "nudge_cooldown": 10,
