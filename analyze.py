@@ -102,7 +102,8 @@ def maybe_trigger_analysis(log_path):
 
 # Load your log JSON from file
 def analyze_data(log_path):
-    client = genai.Client()
+    api_key = os.getenv("GEMINI_API_KEY")
+    client = genai.Client(api_key=api_key)
     with open(log_path, "r", encoding="utf-8") as f:
         logs = json.load(f)
 

@@ -130,10 +130,12 @@ def main():
                             send_focus_session_end_notification_after_warning()
                             if last_window_title is not None:
                                 log_activity(activity_start_time, end_time, last_app_name, last_window_title)
-                                
+
+                            end_time = datetime.now()
                             log_activity(activity_start_time, end_time, last_app_name, last_window_title)
                             analyze_data(LOG_FILE)
                             load_and_display_dashboard(USER_DATA_FILE)
+                            load_config()
                         productive_session_end_warning_counter += 1
                         last_nudge_time = time.time()
 
@@ -157,8 +159,11 @@ def main():
                             unproductive_session_warning_counter = 0
                             # log_activity(activity_start_time, end_time, last_app_name, last_window_title)
             
+                            end_time = datetime.now()
+                            log_activity(activity_start_time, end_time, last_app_name, last_window_title)
                             analyze_data(LOG_FILE)
                             load_and_display_dashboard(USER_DATA_FILE)
+                            load_config()
                         print("You've been unproductive for a while. Time to focus!")
                         unproductive_session_start = None
             print("Current Window Category: ",current_window_category)
@@ -176,6 +181,7 @@ def main():
             
         analyze_data(LOG_FILE)
         load_and_display_dashboard(USER_DATA_FILE)
+        load_config()
         print("\nTracker stopped. Final activity logged.")
     except Exception as e:
         print(f"\nAn unexpected error occurred: {e}")

@@ -94,7 +94,9 @@
         "api",
         "testing",
         "VS Code",
-        "main"
+        "main",
+        "projects",
+        "python"
     ],
     "start_focus_session_in": 10,
     "nudge_cooldown": 10,
